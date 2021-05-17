@@ -12,12 +12,12 @@ from functions import word_cloud, n_gram, dispersion_plot, summary, response
 
 
 #ignore the warnings
-warnings.filterwarnings('ignore')
+# warnings.filterwarnings('ignore')
 
 #download package from nltk
-nltk.download('punkt',quiet=True)
-nltk.download('wordnet',quiet=True)
-nltk.download('stopwords')
+# nltk.download('punkt',quiet=True)
+# nltk.download('wordnet',quiet=True)
+# nltk.download('stopwords')
 
 
 def clean_text(url):
