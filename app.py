@@ -1,8 +1,8 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from newspaper import Article
 import string
-import warnings
+#import warnings
 import nltk
 import re
 from nltk.corpus import stopwords
@@ -15,9 +15,9 @@ from functions import word_cloud, n_gram, dispersion_plot, summary, response
 # warnings.filterwarnings('ignore')
 
 #download package from nltk
-# nltk.download('punkt',quiet=True)
-# nltk.download('wordnet',quiet=True)
-# nltk.download('stopwords')
+nltk.download('punkt',quiet=True)
+nltk.download('wordnet',quiet=True)
+nltk.download('stopwords',quiet=True)
 
 
 def clean_text(url):

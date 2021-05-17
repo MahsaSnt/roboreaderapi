@@ -1,6 +1,6 @@
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
