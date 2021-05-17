@@ -1,1 +1,1 @@
-web: gunicorn roboreader:app
+web: gunicorn app:app
