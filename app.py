@@ -68,7 +68,7 @@ def index():
     status = 'success'
     return jsonify(status= f"{status}")
 
-@app.route('/api/wordcloud',methods=['POST', 'GET'])
+@app.route('/api/wordcloud',methods=['POST'])
 def wordcloud():
     data = request.get_json()
     n = data["min_font"]
@@ -80,7 +80,7 @@ def wordcloud():
 
     # return render_template('plot.html', plot_url=plot_url, t='WordCloud') 
     
-@app.route('/api/ngram',methods=['POST', 'GET'])
+@app.route('/api/ngram',methods=['POST'])
 def ngram():
     data = request.get_json()
     n_words = data["n_words"]
@@ -91,7 +91,7 @@ def ngram():
     return jsonify(plot_url= f"{plot_url}")
     
 
-@app.route('/api/dispersionplot',methods=['POST', 'GET'])
+@app.route('/api/dispersionplot',methods=['POST'])
 def dispersion():
     data = request.get_json()
     words = data["words"]
@@ -100,7 +100,7 @@ def dispersion():
     
     return jsonify(plot_url= f"{plot_url}")
 
-@app.route('/api/summary',methods=['POST', 'GET'])
+@app.route('/api/summary',methods=['POST'])
 def summari():
     data = request.get_json()
     n_sentences = data["n_sentences"]
@@ -110,7 +110,7 @@ def summari():
     return jsonify(Summary = f"{summ}")    
 
 
-@app.route('/api/response',methods=['POST', 'GET'])
+@app.route('/api/response',methods=['POST'])
 def roboresponse():
     data = request.get_json()
     user_question = data["question"]
