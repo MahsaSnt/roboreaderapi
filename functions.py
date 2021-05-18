@@ -19,9 +19,9 @@ from nltk.corpus import stopwords
 from nltk.downloader import download, download_shell 
 
 #download package from nltk
-download('punkt',quiet=True)
-download('wordnet',quiet=True)
-download('stopwords',quiet=True)
+# download('punkt',quiet=True)
+# download('wordnet',quiet=True)
+# download('stopwords',quiet=True)
 
 
 def clean_text(url):
