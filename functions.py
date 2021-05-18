@@ -16,6 +16,7 @@ import re
 from newspaper import Article
 import nltk
 from nltk.corpus import stopwords
+from nltk.downloader import download, download_shell 
 
 #download package from nltk
 # nltk.download('punkt',quiet=True)
