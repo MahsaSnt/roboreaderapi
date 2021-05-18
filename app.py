@@ -1,57 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from newspaper import Article
-import string
-#import warnings
-import nltk
-import re
-from nltk.corpus import stopwords
 
-
-from functions import word_cloud, n_gram, dispersion_plot, summary, response
-
-
-#ignore the warnings
-# warnings.filterwarnings('ignore')
-
-#download package from nltk
-nltk.download('punkt',quiet=True)
-nltk.download('wordnet',quiet=True)
-nltk.download('stopwords',quiet=True)
-
-
-def clean_text(url):
-    article = Article(url)
-    article.download()
-    article.parse()
-    article.nlp()
-    corpus = article.text
-
-    #tokenization
-    sent_tokens = nltk.sent_tokenize(corpus)
-    text = ''
-    sentences = []
-    for s in sent_tokens:
-        s = re.sub(r'\d+', ' ', s)
-        s = re.sub(r'\[[0-9]*\]', ' ', s)
-        s = re.sub(r'\s+', ' ', s)
-        # Removing special characters and digits
-        s = re.sub('[^a-zA-Z]', ' ', s)
-        s = re.sub(r'\s+', ' ', s)
-        if s[0] == ' ':
-            s = s[1:]
-        if s[-1] == ' ':
-            s = s[:-1]
-        sentences.append(s)
-        text += s 
-    
-    lang_stopwords = stopwords.words('english')
-    tokens = nltk.word_tokenize(text)
-    words = [w.lower() for w in tokens if w.lower() not in string.punctuation and w.lower() not in lang_stopwords]
-    
-    text = ' '.join(words)
-    
-    return [text, sentences, words]
+from functions import word_cloud, n_gram, dispersion_plot, summary, response, clean_text
 
 
 app=Flask(__name__)

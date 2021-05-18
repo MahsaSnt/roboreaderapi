@@ -1,6 +1,6 @@
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
@@ -12,8 +12,51 @@ import heapq
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import string
+import re
+from newspaper import Article
+import nltk
+from nltk.corpus import stopwords
 
-  
+#download package from nltk
+# nltk.download('punkt',quiet=True)
+# nltk.download('wordnet',quiet=True)
+# nltk.download('stopwords',quiet=True)
+
+
+def clean_text(url):
+    article = Article(url)
+    article.download()
+    article.parse()
+    article.nlp()
+    corpus = article.text
+
+    #tokenization
+    sent_tokens = nltk.sent_tokenize(corpus)
+    text = ''
+    sentences = []
+    for s in sent_tokens:
+        s = re.sub(r'\d+', ' ', s)
+        s = re.sub(r'\[[0-9]*\]', ' ', s)
+        s = re.sub(r'\s+', ' ', s)
+        # Removing special characters and digits
+        s = re.sub('[^a-zA-Z]', ' ', s)
+        s = re.sub(r'\s+', ' ', s)
+        if s[0] == ' ':
+            s = s[1:]
+        if s[-1] == ' ':
+            s = s[:-1]
+        sentences.append(s)
+        text += s 
+    
+    lang_stopwords = stopwords.words('english')
+    tokens = nltk.word_tokenize(text)
+    words = [w.lower() for w in tokens if w.lower() not in string.punctuation and w.lower() not in lang_stopwords]
+    
+    text = ' '.join(words)
+    
+    return [text, sentences, words]
+
+    
 def word_cloud(n,text):
     img = BytesIO()
     wordcloud = WordCloud(width = 1000, height = 600, background_color = 'white', collocations=False, stopwords = set(STOPWORDS), min_font_size = int(n)).generate(text)
@@ -122,7 +165,6 @@ def response(user_response, sentences):
       robo_response = 'your welcome'        
   
   else:
-      robo_response = ''
       sentences.append(user_response)
       tfidfvec=TfidfVectorizer(tokenizer = LemNormalize , stop_words='english')
       tfidf=tfidfvec.fit_transform(sentences)
@@ -135,8 +177,9 @@ def response(user_response, sentences):
       score = flat[-2]
     
       if score==0:
-        robo_response = robo_response + "sorry,I dont understand"
+        robo_response = "sorry,I dont understand"
       else:
-        robo_response = robo_response + sentences[idx]
-
+        robo_response = sentences[idx]
+        
+      sentences.remove(user_response)
   return robo_response
