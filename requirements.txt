@@ -14,7 +14,6 @@ feedparser==6.0.2
 filelock==3.0.12
 Flask==2.0.0
 Flask-Cors==3.0.10
-gensim==3.8.1
 gunicorn==20.1.0
 idna==2.10
 itsdangerous==2.0.0

@@ -20,7 +20,7 @@ from nltk.downloader import download, download_shell
 from yellowbrick.text import PosTagVisualizer
 from nltk.tag import pos_tag
 from collections import Counter
-from gensim.summarization import keywords
+# from gensim.summarization import keywords
 from textblob import Word
 
 #download package from nltk
@@ -243,10 +243,10 @@ def mendenhall_curve (words):
     
     return plot_url
 
-def key_words (text, n):
-    KW = keywords(text, words = int(n))
-    kw = KW.split('\n')
-    return kw
+# def key_words (text, n):
+#     KW = keywords(text, words = int(n))
+#     kw = KW.split('\n')
+#     return kw
 
 
 def frequency_chart(min_f, words):

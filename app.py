@@ -87,14 +87,14 @@ def mendenhall():
     plot_url = mendenhall_curve(words)
     return jsonify(plot_url= f"{plot_url}")
     
-@app.route ('/api/keywords', methods = ['POST'])
-def keyW():
-    data = request.get_json()
-    n = data["n_words"]
-    text = app.config['lem_text']
-    kw = key_words (text, n)
+# @app.route ('/api/keywords', methods = ['POST'])
+# def keyW():
+#     data = request.get_json()
+#     n = data["n_words"]
+#     text = app.config['lem_text']
+#     kw = key_words (text, n)
     
-    return jsonify(keywords= f"{kw}")
+#     return jsonify(keywords= f"{kw}")
 
     
 @app.route ('/api/frequencychart', methods = ['POST'])

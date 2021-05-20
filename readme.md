@@ -29,10 +29,6 @@
 	- it returns postag_plot of the text.
 	
 	
-- https://roboreader.herokuapp.com/api/keywords, key value : "n_words"
-	- enter the number of keywords you like to get, for example {"n_words": "20"}
-	
-	
 - https://roboreader.herokuapp.com/api/frequencychart, key value : "min_frequency"
 	- enter minimum frequency of words to get a chart with the words which the frequency of them is at least equal to your number, for example {"min_frequency": "10"}
 	
