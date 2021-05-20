@@ -27,6 +27,7 @@ from textblob import Word
 # download('punkt',quiet=True)
 # download('wordnet',quiet=True)
 # download('stopwords',quiet=True)
+# download('averaged_perceptron_tagger')
 
 
 def clean_text(url):

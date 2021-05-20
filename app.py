@@ -13,12 +13,24 @@ def index():
     data = request.get_json()
     url = data["url"]
     clean = clean_text(url)
-    app.config['text'] = clean[0]
-    app.config['sentences'] = clean[1]
-    app.config['words'] = clean[2]
-    app.config['lem_text'] = clean[3]
-    app.config['lem_words'] = clean[4]
-    app.config['postag'] = clean[5]
+    global text
+    text = clean[0]
+    global sentences 
+    sentences = clean[1]
+    global words
+    words = clean[2]
+    global lem_text 
+    lem_text = clean[3]
+    global lem_words 
+    lem_words = clean[4]
+    global postag
+    postag = clean[5]
+    # app.config['text'] = clean[0]
+    # app.config['sentences'] = clean[1]
+    # app.config['words'] = clean[2]
+    # app.config['lem_text'] = clean[3]
+    # app.config['lem_words'] = clean[4]
+    # app.config['postag'] = clean[5]
     status = 'success'
     return jsonify(status= f"{status}")
 
@@ -26,10 +38,10 @@ def index():
 def wordcloud():
     data = request.get_json()
     n = data["min_font"]
-    text = app.config['lem_text']
+    #text = app.config['text']
     # url = 'https://en.wikipedia.org/wiki/Data_science'
     # n = '10'
-    plot_url = word_cloud(n,text)
+    plot_url = word_cloud(n,lem_text)
     return jsonify(plot_url= f"{plot_url}")
 
     # return render_template('plot.html', plot_url=plot_url, t='WordCloud') 
@@ -39,8 +51,8 @@ def ngram():
     data = request.get_json()
     n_words = data["n_words"]
     n_ngrams = data["n_ngrams"]
-    text = app.config['lem_text']
-    plot_url = n_gram(n_words, n_ngrams, text)
+    #text = app.config['lem_text']
+    plot_url = n_gram(n_words, n_ngrams, lem_text)
     
     return jsonify(plot_url= f"{plot_url}")
     
@@ -49,8 +61,8 @@ def ngram():
 def dispersion():
     data = request.get_json()
     words = data["words"]
-    text = app.config['lem_text']
-    plot_url = dispersion_plot(text, words)
+    #text = app.config['lem_text']
+    plot_url = dispersion_plot(lem_text, words)
     
     return jsonify(plot_url= f"{plot_url}")
 
@@ -58,8 +70,8 @@ def dispersion():
 def summari():
     data = request.get_json()
     n_sentences = data["n_sentences"]
-    sentences = app.config['sentences']
-    words = app.config['words']
+    # sentences = app.config['sentences']
+    # words = app.config['words']
     summ = summary(n_sentences, sentences, words)
     return jsonify(Summary = f"{summ}")    
 
@@ -68,7 +80,7 @@ def summari():
 def roboresponse():
     data = request.get_json()
     user_question = data["question"]
-    sentences = app.config['sentences']
+    #sentences = app.config['sentences']
     
     res = response(user_question, sentences)
     return jsonify(RoboResponse = f"{res}")   
@@ -76,14 +88,14 @@ def roboresponse():
 
 @app.route ('/api/postagplot', methods=['POST'])
 def pos():
-    text = app.config["text"]
+    #text = app.config["text"]
     plot_url = pos_tag_plot(text)
     return jsonify(plot_url= f"{plot_url}")
 
 
 @app.route ('/api/mendenhallcurve', methods=['POST'])
 def mendenhall():
-    words = app.config['words']
+    #words = app.config['words']
     plot_url = mendenhall_curve(words)
     return jsonify(plot_url= f"{plot_url}")
     
@@ -101,7 +113,7 @@ def mendenhall():
 def fchart():
     data = request.get_json()
     min_f = data["min_frequency"]
-    words = app.config['lem_words']
+    #words = app.config['lem_words']
     plot_url = frequency_chart (min_f, words)
     
     return jsonify(plot_url = f"{plot_url}")
@@ -114,4 +126,4 @@ def fchart():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug = True)
