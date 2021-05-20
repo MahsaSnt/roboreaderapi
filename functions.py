@@ -17,6 +17,11 @@ from newspaper import Article
 import nltk
 from nltk.corpus import stopwords
 from nltk.downloader import download, download_shell 
+from yellowbrick.text import PosTagVisualizer
+from nltk.tag import pos_tag
+from collections import Counter
+from gensim.summarization import keywords
+from textblob import Word
 
 #download package from nltk
 # download('punkt',quiet=True)
@@ -35,6 +40,9 @@ def clean_text(url):
     sent_tokens = nltk.sent_tokenize(corpus)
     text = ''
     sentences = []
+    words = []
+    postag = []
+    lang_stopwords = stopwords.words('english')
     for s in sent_tokens:
         s = re.sub(r'\d+', ' ', s)
         s = re.sub(r'\[[0-9]*\]', ' ', s)
@@ -46,16 +54,34 @@ def clean_text(url):
             s = s[1:]
         if s[-1] == ' ':
             s = s[:-1]
+        
+        tokens = nltk.word_tokenize(s)
+        word = [w.lower() for w in tokens if w.lower() not in string.punctuation and w.lower() not in lang_stopwords]
+        postag.append([pos_tag(word)])
         sentences.append(s)
-        text += s 
+        text += s + '.'
+        words += word
     
-    lang_stopwords = stopwords.words('english')
-    tokens = nltk.word_tokenize(text)
-    words = [w.lower() for w in tokens if w.lower() not in string.punctuation and w.lower() not in lang_stopwords]
+    lem_words = []
+    lem_text = ''
+    for j in postag:
+     k = j[0] 
+     for i in k:
+       w = Word(i[0])
+       if i[1][0] == 'V':
+           l = w.lemmatize('v')
+       elif i[1][0] == 'N':
+           l = w.lemmatize('n')
+       elif i[1][0] == 'J':
+           l = w.lemmatize('a')  
+       elif i[1][0] == 'R':
+           l = w.lemmatize('r') 
+       else :
+           l = w.lemmatize()
+       lem_words.append(l)
+       lem_text += l + ' '
     
-    text = ' '.join(words)
-    
-    return [text, sentences, words]
+    return [text, sentences, words, lem_text, lem_words, postag]
 
     
 def word_cloud(n,text):
@@ -184,3 +210,62 @@ def response(user_response, sentences):
         
       sentences.remove(user_response)
   return robo_response
+
+
+def pos_tag_plot (text):
+     img = BytesIO()
+     postag=[[pos_tag(word_tokenize(i))] for i in text.split('.')] 
+     plt.figure(figsize = (8, 5), facecolor = None) 
+     viz = PosTagVisualizer()
+     viz.fit(postag)
+     plt.ylabel('count')
+     viz.show()
+     plt.savefig(img,format='png')
+     plt.close()
+     img.seek(0)
+     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+     
+     return plot_url
+ 
+    
+def mendenhall_curve (words):
+    img=BytesIO()
+    ll=[len(i) for i in words]
+    sort_count=sorted(dict(Counter(ll)).items())
+    x,y=zip(*sort_count)
+    plt.plot(x,y)
+    plt.xlabel('length of tokens')
+    plt.ylabel('count')
+    plt.savefig(img,format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8') 
+    
+    return plot_url
+
+def key_words (text, n):
+    KW = keywords(text, words = int(n))
+    kw = KW.split('\n')
+    return kw
+
+
+def frequency_chart(min_f, words):
+    
+    min_f = int(min_f)
+    img = BytesIO()
+    sort_count = [[k, v] for k, v in sorted(dict(Counter(words)).items(),
+                                                key=lambda item: item[1])]
+    z=[j for j in sort_count if j[1] >= min_f][::-1]
+    x,y = zip(*z)
+    plt.figure(figsize = (25-min_f, 8))
+    plt.bar(x,y)
+    plt.xticks(rotation=45)
+    plt.xlabel('most frequent words')
+    plt.ylabel('count')
+    plt.savefig(img,format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+
+    return plot_url    
+
