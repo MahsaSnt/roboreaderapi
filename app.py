@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from functions import word_cloud, n_gram, dispersion_plot, summary, response, clean_text, pos_tag_plot, mendenhall_curve
-from functions import key_words, frequency_chart
+from functions import frequency_chart
 
 app=Flask(__name__)
 CORS(app)
