@@ -1,3 +1,5 @@
 venv
 __pycache__
 templates
+static
+app0.py
