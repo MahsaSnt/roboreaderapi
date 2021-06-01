@@ -13,7 +13,8 @@ def index():
     typ = data["type"]
     path = data['path']
     min_silence_len = data['min_silence_len']
-    text = give_text(typ, path, int(min_silence_len))
+    directory = data['directory']
+    text = give_text(typ, path, directory, int(min_silence_len))
     return jsonify(text= f"{text}")
 
 

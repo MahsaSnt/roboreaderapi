@@ -46,9 +46,9 @@ import shutil
 # download('stopwords',quiet=True)
 # download('averaged_perceptron_tagger')
 
-def xcut(filename, min_silence_len = 500, dr='D:/portfolio/roboreader/static/chuncks'):
+def xcut(filename, dr,  min_silence_len = 500):
     n = random.randint(0,1000)
-    directory = dr + str(n)
+    directory = dr + '/chunk' + str(n)
     if os.path.exists(directory):
             shutil.rmtree(directory)
     os.makedirs(directory)    
@@ -78,7 +78,7 @@ def xcut(filename, min_silence_len = 500, dr='D:/portfolio/roboreader/static/chu
     
     return text[:-1]
 
-def give_text(typ, path, min_silence_len = 500):
+def give_text(typ, path, dr, min_silence_len = 500):
     if typ == 'url':
         article = Article(path)
         article.download()
@@ -105,7 +105,7 @@ def give_text(typ, path, min_silence_len = 500):
         else:
             text = 'please input a valid file/url' 
     elif typ == 'audio_file' :
-        text = xcut(path, min_silence_len)
+        text = xcut(path, dr, min_silence_len)
     else :
         text = 'please input a valid file/url'
     return text    

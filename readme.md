@@ -2,7 +2,7 @@
 #### routes and key values are mentioned below:
 
 - https://roboreader.herokuapp.com/api, key vales : "type", "path"
-   - Enter the type of your desired article ("url" or "text_file" or "audio_file") and the path of it, if it's type is "url" in path option insert the url of the article and if it's type is "file" in path option insert the directory of the file in the server, also the format of text_files should be "txt" or "docx" or "pdf" and the format of audio_files should be "mp3" or "wav". For example {"type": "url", "path": "https://en.wikipedia.org/wiki/Data_science"} or {"type": "text_file", "path": "D:/portfolio/roboreader/static/test.txt"}. This endpoint return the text of the article.
+   - Enter the type of your desired article ("url" or "text_file" or "audio_file") and the path of it, if it's type is "url" in path option insert the url of the article and if it's type is "file" in path option insert the directory of the file in the server, also the format of text_files should be "txt" or "docx" or "pdf" and the format of audio_files should be "mp3" or "wav". Also you need to insert a directory in the server to save splitted voice by silence and minimum silence length (ms) for splitting the sentences, suggested value is 500 but in some cases it should be smaller or larger. For example {"type": "url", "path": "https://en.wikipedia.org/wiki/Data_science", "dirctory": "D://test", "min_silence_len": "500"} or {"type": "text_file", "path": "D:/portfolio/roboreader/static/test.txt", "dirctory": "D://test", "min_silence_len": "500"}. This endpoint return the text of the article.
 
 
 - https://roboreader.herokuapp.com/api/cleantext, key value : "text"
