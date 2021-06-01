@@ -2,7 +2,7 @@
 #### routes and key values are mentioned below:
 
 - https://roboreader.herokuapp.com/api, key vales : "type", "path"
-   - Enter the type of your desired article ("url" or "file") and the path of it, if it's type is "url" in path option insert the url of the article and if it's type is "file" in path option insert the directory of the file in the server, also the format of files should be "txt" or "docx" or "pdf". For example {"type": "url", "path": "https://en.wikipedia.org/wiki/Data_science"} or {"type": "file", "path": "D:/portfolio/roboreader/static/test.txt"}. This endpoint return the text of the article.
+   - Enter the type of your desired article ("url" or "text_file" or "audio_file") and the path of it, if it's type is "url" in path option insert the url of the article and if it's type is "file" in path option insert the directory of the file in the server, also the format of text_files should be "txt" or "docx" or "pdf" and the format of audio_files should be "mp3" or "wav". For example {"type": "url", "path": "https://en.wikipedia.org/wiki/Data_science"} or {"type": "text_file", "path": "D:/portfolio/roboreader/static/test.txt"}. This endpoint return the text of the article.
 
 
 - https://roboreader.herokuapp.com/api/cleantext, key value : "text"
@@ -25,8 +25,8 @@
     - Enter number of sentences of the summary and clean_text from api/cleantext endpoint. For example {"n_sentences": "10", "clean_text": "..."}
     
 
-- https://roboreader.herokuapp.com/api/response, key values : "question", "clean_text"
-    - Enter your question from the text and clean_text from api/cleantext endpoint. For example {"question": "what is data mining", "clean_text": "..."}
+- https://roboreader.herokuapp.com/api/response, key values : "type", "question", "clean_text"
+    - Enter the type ("voice" or "text"), your question and clean_text from api/cleantext endpoint. For example {"type": "text", "question": "what is data mining", "clean_text": "..."}
 
 
 - https://roboreader.herokuapp.com/api/postagplot, key value : "clean_text"

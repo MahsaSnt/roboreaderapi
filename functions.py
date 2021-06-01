@@ -24,6 +24,20 @@ from collections import Counter
 from textblob import Word
 import PyPDF2  
 import docx2txt
+import librosa
+import soundfile as sf
+import wave
+import speech_recognition as sr 
+import os 
+from pydub import AudioSegment
+from pydub.silence import split_on_silence
+import random
+import shutil
+#import spacy
+
+# Load English tokenizer, tagger, parser and NER
+# python -m spacy download en_core_web_sm
+#nlp = spacy.load("en_core_web_sm")
 
 
 #download package from nltk
@@ -32,15 +46,46 @@ import docx2txt
 # download('stopwords',quiet=True)
 # download('averaged_perceptron_tagger')
 
+def xcut(filename, min_silence_len = 500, dr='D:/portfolio/roboreader/static/chuncks'):
+    n = random.randint(0,1000)
+    directory = dr + str(n)
+    if os.path.exists(directory):
+            shutil.rmtree(directory)
+    os.makedirs(directory)    
+    newname = 'tmp' + str(n) +'.wav'
+    x,_ = librosa.load(filename, sr=16000)
+    sf.write(directory + '/' + newname, x, 16000)
+    text = ''
+    cnt = 0
+    sound = AudioSegment.from_wav(directory + '/' + newname)
+    chunks = split_on_silence(sound, min_silence_len=min_silence_len, silence_thresh=-36, keep_silence=400)#silence time:700ms and silence_dBFS<-70dBFS
+    
+    for ck in chunks:
+        path = directory + '/tmp' + ('_%d.wav'%cnt)
+        nck = ck.set_frame_rate(16000)
+        nck = nck.set_channels(1)
+        nck.export(path, format="wav")
+        r = sr.Recognizer()
+        try:
+            with sr.AudioFile(path) as source:
+                audio_data = r.record(source)
+                tx = r.recognize_google(audio_data)
+                text += tx + '. '
+                cnt = cnt + 1
+        except:
+            pass
+    shutil.rmtree(directory)
+    
+    return text[:-1]
 
-def give_text(typ, path):
+def give_text(typ, path, min_silence_len = 500):
     if typ == 'url':
         article = Article(path)
         article.download()
         article.parse()
         article.nlp()
         text = article.text  
-    elif typ == 'file':
+    elif typ == 'text_file':
         ext = path.rsplit(".", 1)[1].lower()
         if ext == 'docx':
             text = docx2txt.process(path)
@@ -58,7 +103,9 @@ def give_text(typ, path):
             for line in article:
                 text += str(line)  
         else:
-            text = 'please input a valid file/url'    
+            text = 'please input a valid file/url' 
+    elif typ == 'audio_file' :
+        text = xcut(path, min_silence_len)
     else :
         text = 'please input a valid file/url'
     return text    
@@ -67,7 +114,8 @@ def clean_text(corpus):
     #tokenization
     sent_tokens = nltk.sent_tokenize(corpus)
     text = ''
-    postag = []
+    #postag = []
+    lem_text = ''
     lang_stopwords = stopwords.words('english')
     for s in sent_tokens:
         #s = re.sub(r'\d+', ' ', s)
@@ -78,35 +126,43 @@ def clean_text(corpus):
         s = re.sub(r'\s+', ' ', s)
         s = s.replace('\"', '')
         s = s.replace('\\', '')
+        s = re.sub(r'^[.*]$', '',s)
+        s = re.sub(r'\[[a-z]*\]', '',s)
+        s = s.replace(' .', '.')
         # Removing special characters and digits
         #s = re.sub('[^a-zA-Z]', ' ', s)
         if s[0] == ' ':
             s = s[1:]
         if s[-1] == ' ':
             s = s[:-1]
+        text += s + ' '    
         s1 = re.sub('[^a-zA-Z]', ' ', s)
+        #s1 =  " ".join([token.lemma_ for token in nlp(s1)])
+        
         tokens = nltk.word_tokenize(s1)
         word = [w.lower() for w in tokens if w.lower() not in string.punctuation]
-        postag.append([pos_tag(word)])
-        text += s + ' '
-        
-    lem_text = ''
-    for j in postag:
-        k = j[0] 
+
+        k = [pos_tag(word)][0]
         for i in k:
             if i[0] not in lang_stopwords:  
-               w = Word(i[0])
-               if i[1][0] == 'V':
-                   l = w.lemmatize('v')
-               elif i[1][0] == 'N':
-                   l = w.lemmatize('n')
-               elif i[1][0] == 'J':
-                   l = w.lemmatize('a')  
-               elif i[1][0] == 'R':
-                   l = w.lemmatize('r') 
-               else :
-                   l = w.lemmatize()
-               lem_text += l + ' '
+                w = Word(i[0])
+                if i[1][0] == 'V':
+                    l = w.lemmatize('v')
+                elif i[1][0] == 'N':
+                    l = w.lemmatize('n')
+                elif i[1][0] == 'J':
+                    l = w.lemmatize('a')  
+                elif i[1][0] == 'R':
+                    l = w.lemmatize('r') 
+                else :
+                    l = w.lemmatize()
+                lem_text += l + ' '
+        
+        # tokens = nltk.word_tokenize(s1)
+        # word = [w.lower() for w in tokens if w.lower() not in string.punctuation and w.lower() not in lang_stopwords]
+        # lem_text += ' '.join(word)
+   
+    
       
     return {'clean_text': text[:-1], 'lemmatized_text': lem_text[:-1]}
 
@@ -210,19 +266,32 @@ remove_punct_dict = dict((ord(punct),None) for punct in string.punctuation)
 def LemNormalize(text1):
     return word_tokenize(text1.lower().translate(remove_punct_dict))
 
-def response(user_response, n_responses, text):
+def ask_question():
+    recognizer = sr.Recognizer() 
+    mic = sr.Microphone(device_index=1) 
+    with mic as source:
+        print ('please say the phrases you like to know more about :')
+        recognizer.adjust_for_ambient_noise(source) 
+        captured_audio = recognizer.listen(source = mic)        
+    
+    text = recognizer.recognize_google(captured_audio)    
+    return text
+
+def response(typ, user_response, n_responses, text):
   n_responses = int(n_responses)
   sentences = nltk.sent_tokenize(text)
+  if typ == 'voice':
+      user_response = ask_question()
   user_response = user_response.lower()
   if user_response in ["hi","hello","hey","hola"]:
-      robo_response = 'hello, I like to help you, please ask your questions.'
+       robo_response = 'hello, I like to help you, please ask your questions.'
       
   elif user_response in ['bye', 'goodbye']:
-      robo_response = 'See you later'
+       robo_response = 'See you later'
       
   elif user_response in ['thanks', 'thank you', 'good', 'nice']:
-      robo_response = 'your welcome'        
-  
+       robo_response = 'your welcome'        
+
   else:
       sentences.append(user_response)
       tfidfvec=TfidfVectorizer(tokenizer = LemNormalize , stop_words='english')

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from functions import word_cloud, n_gram, dispersion_plot, summary, response, clean_text, pos_tag_plot
 from functions import frequency_chart, give_text
+import numpy as np
 
 app=Flask(__name__)
 CORS(app)
@@ -11,7 +12,8 @@ def index():
     data = request.get_json()
     typ = data["type"]
     path = data['path']
-    text = give_text(typ, path)
+    min_silence_len = data['min_silence_len']
+    text = give_text(typ, path, int(min_silence_len))
     return jsonify(text= f"{text}")
 
 
@@ -64,10 +66,11 @@ def summari():
 @app.route('/api/response',methods=['POST'])
 def roboresponse():
     data = request.get_json()
+    typ = data["type"]
     user_question = data["question"]
     text = data["clean_text"]
     n = data["n_responses"]
-    res = response(user_question, n, text)
+    res = response(typ, user_question, n, text)
     return jsonify(RoboResponse = f"{res}")   
 
 
