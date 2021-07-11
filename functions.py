@@ -128,6 +128,7 @@ def clean_text(corpus):
         s = s.replace('\\', '')
         s = re.sub(r'^[.*]$', '',s)
         s = re.sub(r'\[[a-z]*\]', '',s)
+        s = re.sub(r'\[[ a-z ]*\]', '',s)
         s = s.replace(' .', '.')
         # Removing special characters and digits
         #s = re.sub('[^a-zA-Z]', ' ', s)
@@ -164,7 +165,7 @@ def clean_text(corpus):
    
     
       
-    return {'clean_text': text[:-1], 'lemmatized_text': lem_text[:-1]}
+    return [text[:-1],lem_text[:-1]]
 
 
 def word_cloud(n,text):
@@ -210,6 +211,14 @@ def n_gram(n_words, n_ngrams, text):
 
 
 def dispersion_plot(text, words):
+    words = words.split(",")
+    for i,word in enumerate(words):
+        if word[0]==" ":
+            word = word[1:]
+        if word[-1]==" ":
+            word = word[:-1]
+        words[i] = word 
+        
     words_token = word_tokenize(text)
     points = [(x,y) for x in range(len(words_token)) for y in range(len(words)) if words_token[x] == words[y]]
 
@@ -307,7 +316,7 @@ def response(typ, user_response, n_responses, text):
           flat.sort()
           score = flat[-i]
           m = nltk.word_tokenize(sentences[idx])
-          if score > 0 and len(m) >= 5:
+          if score > 0 and len(m) >= 6:
               robo_response.append(sentences[idx])
               c += 1
           i += 1 

@@ -22,8 +22,10 @@ def index():
 def cl():
     data = request.get_json()
     text = data['text']
-    clean = clean_text(text)
-    return jsonify(clean_text= f"{clean}")
+    clean_data = clean_text(text)
+    clean = clean_data[0]
+    lem = clean_data[1]
+    return jsonify(clean_text= f"{clean}", lemmatized_text=f'{lem}')
 
 
 @app.route('/api/wordcloud',methods=['POST'])
@@ -72,7 +74,7 @@ def roboresponse():
     text = data["clean_text"]
     n = data["n_responses"]
     res = response(typ, user_question, n, text)
-    return jsonify(RoboResponse = f"{res}")   
+    return jsonify(RoboResponse = res)   
 
 
 @app.route ('/api/postagplot', methods=['POST'])
